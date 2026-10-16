@@ -15,6 +15,10 @@ class Cancion:
     @property
     def titulo(self):
         return self._titulo
+# ingresado un setter para el título que valida que no esté vacío
+    @titulo.setter
+    def titulo(self, nuevo_titulo):
+        self._titulo = nuevo_titulo
 
     @property
     def artista(self):

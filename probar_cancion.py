@@ -3,17 +3,25 @@ from models.cancion import Cancion
 
 cancion = Cancion(
     1,
-    "La Balada del Diablo y La Muerte",
-    "La Renga",
-    "Despedazado por Mil Partes",
-    1996,
-    300
+    "De música ligera",
+    "Soda Stereo",
+    "Canción animal",
+    1990,
+    218
 )
 
+print("Canción original:")
 print(cancion)
-print("Código:", cancion.codigo)
-print("Título:", cancion.titulo)
-print("Artista:", cancion.artista)
-print("Álbum:", cancion.album)
-print("Año:", cancion.anio)
-print("Duración:", cancion.duracion, "segundos")
+
+print("\nModificando el título...")
+cancion.titulo = "Persiana americana"
+print(cancion)
+
+print("\nProbando una validación...")
+
+try:
+    cancion.titulo = ""
+except ValueError as error:
+    print("Error controlado:", error)
+
+print("\nTítulo actual:", cancion.titulo)
