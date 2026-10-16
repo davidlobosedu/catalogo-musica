@@ -1,0 +1,21 @@
+
+# Entorno virtual
+.venv/
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+
+# Configuración local
+.env
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos temporales
+*.log
