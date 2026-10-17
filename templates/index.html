@@ -2,21 +2,25 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Musical</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
     <h1>Catálogo Musical</h1>
     <p>Administrá tu colección de canciones.</p>
 
+    <!-- Mensajes del sistema -->
     {% with mensajes = get_flashed_messages(with_categories=true) %}
         {% for categoria, mensaje in mensajes %}
             <p><strong>{{ mensaje }}</strong></p>
         {% endfor %}
     {% endwith %}
 
+    <!-- Formulario para agregar canciones -->
     <h2>Agregar canción</h2>
 
     <form action="{{ url_for('agregar_cancion') }}" method="POST">
@@ -47,8 +51,43 @@
         <button type="submit">Guardar canción</button>
     </form>
 
-    <hr>
+    <!-- Formulario de búsqueda -->
+    <h2>Buscar canciones</h2>
 
+    <form action="{{ url_for('buscar_canciones') }}" method="GET">
+        <label for="criterio">Buscar por:</label>
+
+        <select id="criterio" name="criterio" required>
+            <option value="titulo">Título</option>
+            <option value="artista">Artista</option>
+            <option value="album">Álbum</option>
+        </select>
+
+        <br><br>
+
+        <label for="valor">Texto exacto a buscar:</label>
+        <input
+            type="text"
+            id="valor"
+            name="valor"
+            required
+            placeholder="Ej.: Soda Stereo"
+        >
+
+        <br><br>
+
+        <button type="submit">Buscar</button>
+        <a href="{{ url_for('inicio') }}">Ver todas</a>
+    </form>
+
+    <!-- Información de la búsqueda -->
+    {% if busqueda_realizada | default(false) %}
+        <h3>Resultados de la búsqueda</h3>
+        <p>Coincidencias encontradas: {{ canciones | length }}</p>
+        <p>Comparaciones realizadas: {{ comparaciones }}</p>
+    {% endif %}
+
+    <!-- Listado de canciones -->
     <h2>Listado de canciones</h2>
 
     {% if canciones %}
@@ -61,8 +100,10 @@
                     <th>Álbum</th>
                     <th>Año</th>
                     <th>Duración (segundos)</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for cancion in canciones %}
                     <tr>
@@ -72,12 +113,22 @@
                         <td>{{ cancion.album }}</td>
                         <td>{{ cancion.anio }}</td>
                         <td>{{ cancion.duracion }}</td>
+
+                        <td>
+                            <a href="{{ url_for(
+                                'editar_cancion',
+                                codigo=cancion.codigo
+                            ) }}">
+                                Editar
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <p>Todavía no hay canciones registradas.</p>
+        <p>No se encontraron canciones.</p>
     {% endif %}
+
 </body>
 </html>

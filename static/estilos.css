@@ -76,3 +76,17 @@ th {
 tr:nth-child(even) {
     background-color: #f0f3f8;
 }
+
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd2dc;
+    border-radius: 5px;
+    background-color: white;
+}
+
+a {
+    margin-left: 12px;
+    color: #3157a4;
+}

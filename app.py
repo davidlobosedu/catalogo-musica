@@ -3,17 +3,44 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 
 from repositories.cancion_repository import CancionRepository
 from models.cancion import Cancion
+from services.catalogo import Catalogo
 
 app = Flask(__name__)
 app.secret_key = "clave-desarrollo-catalogo-musical"
 
 repositorio = CancionRepository()
+catalogo = Catalogo()
 
 
 @app.route("/")
 def inicio():
     canciones = repositorio.obtener_todas()
     return render_template("index.html", canciones=canciones)
+
+
+@app.route("/buscar", methods=["GET"])
+def buscar_canciones():
+    criterio = request.args.get("criterio", "").strip()
+    valor = request.args.get("valor", "").strip()
+
+    try:
+        canciones, comparaciones = catalogo.buscar_secuencial(
+            criterio,
+            valor
+        )
+
+        return render_template(
+            "index.html",
+            canciones=canciones,
+            criterio_busqueda=criterio,
+            valor_busqueda=valor,
+            comparaciones=comparaciones,
+            busqueda_realizada=True
+        )
+
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("inicio"))
 
 
 @app.route("/agregar", methods=["POST"])
@@ -40,5 +67,62 @@ def agregar_cancion():
     return redirect(url_for("inicio"))
 
 
+@app.route("/editar/<int:codigo>", methods=["GET", "POST"])
+def editar_cancion(codigo):
+    cancion = repositorio.obtener_por_codigo(codigo)
+
+    if cancion is None:
+        flash("No se encontró la canción.", "error")
+        return redirect(url_for("inicio"))
+
+    if request.method == "POST":
+        try:
+            cancion_actualizada = Cancion(
+                codigo=codigo,
+                titulo=request.form["titulo"].strip(),
+                artista=request.form["artista"].strip(),
+                album=request.form["album"].strip(),
+                anio=int(request.form["anio"]),
+                duracion=int(request.form["duracion"])
+            )
+
+            repositorio.modificar(cancion_actualizada)
+            flash("Canción modificada correctamente.", "exito")
+            return redirect(url_for("inicio"))
+
+        except ValueError as error:
+            flash(f"No se pudo modificar la canción: {error}", "error")
+
+    return render_template("editar.html", cancion=cancion)
+
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+@app.route("/editar/<int:codigo>", methods=["GET", "POST"])
+def editar_cancion(codigo):
+    cancion = repositorio.obtener_por_codigo(codigo)
+
+    if cancion is None:
+        flash("No se encontró la canción.", "error")
+        return redirect(url_for("inicio"))
+
+    if request.method == "POST":
+        try:
+            cancion_actualizada = Cancion(
+                codigo=codigo,
+                titulo=request.form["titulo"].strip(),
+                artista=request.form["artista"].strip(),
+                album=request.form["album"].strip(),
+                anio=int(request.form["anio"]),
+                duracion=int(request.form["duracion"])
+            )
+
+            repositorio.modificar(cancion_actualizada)
+            flash("Canción modificada correctamente.", "exito")
+            return redirect(url_for("inicio"))
+
+        except ValueError as error:
+            flash(f"No se pudo modificar la canción: {error}", "error")
+
+    return render_template("editar.html", cancion=cancion)
