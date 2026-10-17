@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Musical</title>
+</head>
+<body>
+    <h1>Catálogo Musical</h1>
+    <p>Administrá tu colección de canciones.</p>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% for categoria, mensaje in mensajes %}
+            <p><strong>{{ mensaje }}</strong></p>
+        {% endfor %}
+    {% endwith %}
+
+    <h2>Agregar canción</h2>
+
+    <form action="{{ url_for('agregar_cancion') }}" method="POST">
+        <label for="codigo">Código:</label>
+        <input type="number" id="codigo" name="codigo" min="1" required>
+        <br><br>
+
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" required>
+        <br><br>
+
+        <label for="artista">Artista:</label>
+        <input type="text" id="artista" name="artista" required>
+        <br><br>
+
+        <label for="album">Álbum:</label>
+        <input type="text" id="album" name="album" required>
+        <br><br>
+
+        <label for="anio">Año:</label>
+        <input type="number" id="anio" name="anio" min="1" required>
+        <br><br>
+
+        <label for="duracion">Duración en segundos:</label>
+        <input type="number" id="duracion" name="duracion" min="1" required>
+        <br><br>
+
+        <button type="submit">Guardar canción</button>
+    </form>
+
+    <hr>
+
+    <h2>Listado de canciones</h2>
+
+    {% if canciones %}
+        <table border="1" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Título</th>
+                    <th>Artista</th>
+                    <th>Álbum</th>
+                    <th>Año</th>
+                    <th>Duración (segundos)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cancion in canciones %}
+                    <tr>
+                        <td>{{ cancion.codigo }}</td>
+                        <td>{{ cancion.titulo }}</td>
+                        <td>{{ cancion.artista }}</td>
+                        <td>{{ cancion.album }}</td>
+                        <td>{{ cancion.anio }}</td>
+                        <td>{{ cancion.duracion }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Todavía no hay canciones registradas.</p>
+    {% endif %}
+</body>
+</html>
