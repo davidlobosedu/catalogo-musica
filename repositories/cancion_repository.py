@@ -95,3 +95,48 @@ class CancionRepository:
 
         finally:
             conexion.close()
+
+    
+    def modificar(self, cancion):
+        """Actualizar una canción existente."""
+        conexion = obtener_conexion()
+
+        try:
+            cursor = conexion.execute(
+                """
+                UPDATE canciones
+                SET titulo = ?, artista = ?, album = ?,
+                    anio = ?, duracion = ?
+                WHERE codigo = ?
+                """,
+                (
+                    cancion.titulo,
+                    cancion.artista,
+                    cancion.album,
+                    cancion.anio,
+                    cancion.duracion,
+                    cancion.codigo
+                )
+            )
+
+            conexion.commit()
+            return cursor.rowcount > 0
+
+        finally:
+            conexion.close()
+    
+    def eliminar(self, codigo):
+        """Eliminar una canción mediante su código."""
+        conexion = obtener_conexion()
+
+        try:
+            cursor = conexion.execute(
+                "DELETE FROM canciones WHERE codigo = ?",
+                (codigo,)
+            )
+
+            conexion.commit()
+            return cursor.rowcount > 0
+
+        finally:
+            conexion.close()

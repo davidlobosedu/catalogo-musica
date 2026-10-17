@@ -4,42 +4,52 @@ from models.cancion import Cancion
 from repositories.cancion_repository import CancionRepository
 
 
-# Preparar la tabla.
 inicializar_db()
-
-# Crear el repositorio.
 repositorio = CancionRepository()
 
-# Insertar una canción de prueba si todavía no existe.
-cancion = repositorio.obtener_por_codigo(1)
+# 1. Insertar una canción de prueba.
+codigo_prueba = 9999
+
+cancion = repositorio.obtener_por_codigo(codigo_prueba)
 
 if cancion is None:
     cancion = Cancion(
-        1,
-        "De música ligera",
-        "Soda Stereo",
-        "Canción animal",
-        1990,
-        218
+        codigo_prueba,
+        "Cancion de prueba",
+        "Artista de prueba",
+        "Album de prueba",
+        2020,
+        180
     )
 
     repositorio.insertar(cancion)
-    print("Canción insertada correctamente.")
+    print("1. Canción insertada.")
 else:
-    print("La canción de prueba ya existe.")
+    print("1. La canción de prueba ya existía.")
 
-# Consultar todas las canciones.
-print("\nListado de canciones:")
-
-for cancion in repositorio.obtener_todas():
-    print(cancion)
-
-# Buscar una canción por código.
-print("\nBúsqueda por código:")
-
-cancion = repositorio.obtener_por_codigo(1)
+# 2. Consultar la canción.
+cancion = repositorio.obtener_por_codigo(codigo_prueba)
 
 if cancion is not None:
-    print(cancion)
-else:
-    print("No se encontró la canción.")
+    print("2. Canción encontrada:", cancion)
+
+# 3. Modificar la canción.
+cancion.titulo = "Cancion modificada"
+cancion.artista = "Artista actualizado"
+
+if repositorio.modificar(cancion):
+    print("3. Canción modificada.")
+
+# Verificar la modificación.
+cancion = repositorio.obtener_por_codigo(codigo_prueba)
+print("Título actualizado:", cancion.titulo)
+
+# 4. Eliminar la canción de prueba.
+if repositorio.eliminar(codigo_prueba):
+    print("4. Canción eliminada.")
+
+# Verificar la eliminación.
+cancion = repositorio.obtener_por_codigo(codigo_prueba)
+
+if cancion is None:
+    print("5. Confirmado: la canción ya no existe.")
