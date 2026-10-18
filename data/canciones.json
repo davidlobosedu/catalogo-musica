@@ -1,11 +1,11 @@
 [
     {
         "codigo": 1,
-        "titulo": "De música ligera",
-        "artista": "Soda Stereo",
-        "album": "Canción animal",
-        "anio": 1990,
-        "duracion": 218
+        "titulo": "El Terco",
+        "artista": "La Renga",
+        "album": "La Renga",
+        "anio": 1998,
+        "duracion": 314
     },
     {
         "codigo": 2,
@@ -29,7 +29,7 @@
         "artista": "Sumo",
         "album": "Llegando a los monos",
         "anio": 1986,
-        "duracion": 341
+        "duracion": 345
     },
     {
         "codigo": 5,
@@ -238,5 +238,13 @@
         "album": "Zambas",
         "anio": 1976,
         "duracion": 220
+    },
+        {
+        "codigo": 31,
+        "titulo": "La Villerita",
+        "artista": "Horacio Guarany",
+        "album": "Grandes Exitos",
+        "anio": 1989,
+        "duracion": 280
     }
 ]

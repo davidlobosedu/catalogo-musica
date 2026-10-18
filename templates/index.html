@@ -1,156 +1,388 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Catálogo Musical</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='estilos.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilos.css') }}"
+    >
 </head>
+
 <body>
-    <h1>Catálogo Musical</h1>
-    <p>Administrá tu colección de canciones.</p>
 
-    <form action="{{ url_for('deshacer_operacion') }}" method="POST">
+    <header>
+        <h1>Catálogo Musical</h1>
+        <p>Administrá tu colección de canciones.</p>
+    </header>
 
-         <button
-            type="submit"
-            {% if cantidad_historial == 0 %}disabled{% endif %}
-         >
-            Deshacer última operación
-        </button>
+    <main>
 
-        <span>
-               Operaciones en historial: {{ cantidad_historial }}
-        </span>
-        
-    </form>
+        <!-- ========================================
+             1. IMPORTACIÓN Y EXPORTACIÓN JSON
+        ========================================= -->
+        <section class="acciones-json">
+            <h2>Importación y exportación</h2>
 
-    <!-- Mensajes del sistema -->
-    {% with mensajes = get_flashed_messages(with_categories=true) %}
-        {% for categoria, mensaje in mensajes %}
-            <p><strong>{{ mensaje }}</strong></p>
-        {% endfor %}
-    {% endwith %}
+            <form
+                action="{{ url_for('exportar_json') }}"
+                method="POST"
+            >
+                <button type="submit">
+                    Exportar canciones a JSON
+                </button>
+            </form>
 
-    <!-- Formulario para agregar canciones -->
-    <h2>Agregar canción</h2>
+            <form
+                action="{{ url_for('importar_json') }}"
+                method="POST"
+            >
+                <button type="submit">
+                    Importar canciones desde JSON
+                </button>
+            </form>
+        </section>
 
-    <form action="{{ url_for('agregar_cancion') }}" method="POST">
-        <label for="codigo">Código:</label>
-        <input type="number" id="codigo" name="codigo" min="1" required>
-        <br><br>
+        <!-- ========================================
+             2. BÚSQUEDA MEDIANTE ÁRBOL BINARIO
+        ========================================= -->
+        <section class="busqueda-arbol">
+            <h2>Buscar por código con árbol binario</h2>
 
-        <label for="titulo">Título:</label>
-        <input type="text" id="titulo" name="titulo" required>
-        <br><br>
+            <form
+                action="{{ url_for('buscar_arbol') }}"
+                method="GET"
+            >
+                <label for="codigo-arbol">
+                    Código de la canción:
+                </label>
 
-        <label for="artista">Artista:</label>
-        <input type="text" id="artista" name="artista" required>
-        <br><br>
+                <input
+                    type="number"
+                    id="codigo-arbol"
+                    name="codigo"
+                    min="1"
+                    required
+                >
 
-        <label for="album">Álbum:</label>
-        <input type="text" id="album" name="album" required>
-        <br><br>
+                <button type="submit">
+                    Buscar en el árbol
+                </button>
+            </form>
 
-        <label for="anio">Año:</label>
-        <input type="number" id="anio" name="anio" min="1" required>
-        <br><br>
+            <form
+                action="{{ url_for('ordenar_arbol') }}"
+                method="GET"
+            >
+                <button type="submit">
+                    Listar canciones ordenadas por código
+                </button>
+            </form>
+        </section>
 
-        <label for="duracion">Duración en segundos:</label>
-        <input type="number" id="duracion" name="duracion" min="1" required>
-        <br><br>
+        <!-- Resultados y comparación de búsquedas en el árbol -->
+        {% if busqueda_arbol_realizada | default(false) %}
+            <section class="resultados-arbol">
+                <h3>Comparación de búsquedas</h3>
 
-        <button type="submit">Guardar canción</button>
-    </form>
+                <p>
+                    Código buscado:
+                    {{ codigo_busqueda }}
+                </p>
 
-    <!-- Formulario de búsqueda -->
-    <h2>Buscar canciones</h2>
+                <p>
+                    Comparaciones en la lista:
+                    {{ comparaciones_lista }}
+                </p>
 
-    <form action="{{ url_for('buscar_canciones') }}" method="GET">
-        <label for="criterio">Buscar por:</label>
+                <p>
+                    Comparaciones en el árbol:
+                    {{ comparaciones_arbol }}
+                </p>
+            </section>
+        {% endif %}
 
-        <select id="criterio" name="criterio" required>
-            <option value="titulo">Título</option>
-            <option value="artista">Artista</option>
-            <option value="album">Álbum</option>
-        </select>
+        <!-- ========================================
+             3. DESHACER LA ÚLTIMA OPERACIÓN
+        ========================================= -->
+        <section class="historial-operaciones">
+            <h2>Historial de operaciones</h2>
 
-        <br><br>
+            <form
+                action="{{ url_for('deshacer_operacion') }}"
+                method="POST"
+            >
+                <button
+                    type="submit"
+                    {% if cantidad_historial == 0 %}disabled{% endif %}
+                >
+                    Deshacer última operación
+                </button>
 
-        <label for="valor">Texto exacto a buscar:</label>
-        <input
-            type="text"
-            id="valor"
-            name="valor"
-            required
-            placeholder="Ej.: Soda Stereo"
-        >
+                <span>
+                    Operaciones en historial:
+                    {{ cantidad_historial }}
+                </span>
+            </form>
+        </section>
 
-        <br><br>
-
-        <button type="submit">Buscar</button>
-        <a href="{{ url_for('inicio') }}">Ver todas</a>
-    </form>
-
-    <!-- Información de la búsqueda -->
-    {% if busqueda_realizada | default(false) %}
-        <h3>Resultados de la búsqueda</h3>
-        <p>Coincidencias encontradas: {{ canciones | length }}</p>
-        <p>Comparaciones realizadas: {{ comparaciones }}</p>
-    {% endif %}
-
-    <!-- Listado de canciones -->
-    <h2>Listado de canciones</h2>
-
-    {% if canciones %}
-        <table border="1" cellpadding="8">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Título</th>
-                    <th>Artista</th>
-                    <th>Álbum</th>
-                    <th>Año</th>
-                    <th>Duración (segundos)</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for cancion in canciones %}
-                    <tr>
-                        <td>{{ cancion.codigo }}</td>
-                        <td>{{ cancion.titulo }}</td>
-                        <td>{{ cancion.artista }}</td>
-                        <td>{{ cancion.album }}</td>
-                        <td>{{ cancion.anio }}</td>
-                        <td>{{ cancion.duracion }}</td>
-
-                       <td>                                       
-                            <a href="{{ url_for('editar_cancion', codigo=cancion.codigo) }}">
-                                Editar
-                            </a>
-
-                            <form
-                                action="{{ url_for('eliminar_cancion', codigo=cancion.codigo) }}"
-                                method="POST"
-                                style="display: inline;"
-                                onsubmit="return confirm('¿Estás seguro de que querés eliminar esta canción?');"
-                            >
-                                <button type="submit">Eliminar</button>
-                            </form>
-
-                       </td> 
-                    </tr>
+        <!-- ========================================
+             4. MENSAJES DEL SISTEMA
+        ========================================= -->
+        <section class="mensajes">
+            {% with mensajes = get_flashed_messages(with_categories=true) %}
+                {% for categoria, mensaje in mensajes %}
+                    <p class="mensaje {{ categoria }}">
+                        <strong>{{ mensaje }}</strong>
+                    </p>
                 {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No se encontraron canciones.</p>
-    {% endif %}
+            {% endwith %}
+        </section>
+
+        <!-- ========================================
+             5. FORMULARIO PARA AGREGAR CANCIONES
+        ========================================= -->
+        <section class="formulario-cancion">
+            <h2>Agregar canción</h2>
+
+            <form
+                action="{{ url_for('agregar_cancion') }}"
+                method="POST"
+            >
+                <div class="campo">
+                    <label for="codigo">
+                        Código:
+                    </label>
+
+                    <input
+                        type="number"
+                        id="codigo"
+                        name="codigo"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="titulo">
+                        Título:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="artista">
+                        Artista:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="artista"
+                        name="artista"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="album">
+                        Álbum:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="album"
+                        name="album"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="anio">
+                        Año:
+                    </label>
+
+                    <input
+                        type="number"
+                        id="anio"
+                        name="anio"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="duracion">
+                        Duración en segundos:
+                    </label>
+
+                    <input
+                        type="number"
+                        id="duracion"
+                        name="duracion"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <button type="submit">
+                    Guardar canción
+                </button>
+            </form>
+        </section>
+
+        <!-- ========================================
+             6. BÚSQUEDA SECUENCIAL DE CANCIONES
+        ========================================= -->
+        <section class="busqueda-canciones">
+            <h2>Buscar canciones</h2>
+
+            <form
+                action="{{ url_for('buscar_canciones') }}"
+                method="GET"
+            >
+                <div class="campo">
+                    <label for="criterio">
+                        Buscar por:
+                    </label>
+
+                    <select
+                        id="criterio"
+                        name="criterio"
+                        required
+                    >
+                        <option value="titulo">
+                            Título
+                        </option>
+
+                        <option value="artista">
+                            Artista
+                        </option>
+
+                        <option value="album">
+                            Álbum
+                        </option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="valor">
+                        Texto exacto a buscar:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="valor"
+                        name="valor"
+                        placeholder="Ej.: Soda Stereo"
+                        required
+                    >
+                </div>
+
+                <button type="submit">
+                    Buscar
+                </button>
+
+                <a href="{{ url_for('inicio') }}">
+                    Ver todas
+                </a>
+            </form>
+        </section>
+
+        <!-- Resultados y cantidad de comparaciones de la búsqueda secuencial -->
+        {% if busqueda_realizada | default(false) %}
+            <section class="resultados-busqueda">
+                <h3>Resultados de la búsqueda</h3>
+
+                <p>
+                    Coincidencias encontradas:
+                    {{ canciones | length }}
+                </p>
+
+                <p>
+                    Comparaciones realizadas:
+                    {{ comparaciones }}
+                </p>
+            </section>
+        {% endif %}
+
+        <!-- ========================================
+             7. LISTADO DE CANCIONES
+        ========================================= -->
+        <section class="listado-canciones">
+            <h2>Listado de canciones</h2>
+
+            {% if canciones %}
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Título</th>
+                                <th>Artista</th>
+                                <th>Álbum</th>
+                                <th>Año</th>
+                                <th>Duración (segundos)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for cancion in canciones %}
+                                <tr>
+                                    <td>{{ cancion.codigo }}</td>
+                                    <td>{{ cancion.titulo }}</td>
+                                    <td>{{ cancion.artista }}</td>
+                                    <td>{{ cancion.album }}</td>
+                                    <td>{{ cancion.anio }}</td>
+                                    <td>{{ cancion.duracion }}</td>
+
+                                    <td class="acciones-cancion">
+                                        <a
+                                            href="{{ url_for(
+                                                'editar_cancion',
+                                                codigo=cancion.codigo
+                                            ) }}"
+                                        >
+                                            Editar
+                                        </a>
+
+                                        <form
+                                            action="{{ url_for(
+                                                'eliminar_cancion',
+                                                codigo=cancion.codigo
+                                            ) }}"
+                                            method="POST"
+                                            onsubmit="return confirm(
+                                                '¿Estás seguro de que querés eliminar esta canción?'
+                                            );"
+                                        >
+                                            <button type="submit">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No se encontraron canciones.</p>
+            {% endif %}
+        </section>
+
+    </main>
 
 </body>
 </html>

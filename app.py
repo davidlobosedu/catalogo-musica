@@ -6,14 +6,16 @@ from models.cancion import Cancion
 from services.catalogo import Catalogo
 from services.historial import HistorialOperaciones
 from services.gestor_deshacer import GestorDeshacer
+from services.json_service import JsonService
+from pathlib import Path
+from structures.arbol_busqueda import ArbolBusqueda
 
 
 app = Flask(__name__)
 app.secret_key = "clave-desarrollo-catalogo-musical"
-
+json_service = JsonService()
 repositorio = CancionRepository()
 catalogo = Catalogo()
-
 historial = HistorialOperaciones()
 gestor_deshacer = GestorDeshacer(repositorio, historial)
 
@@ -188,6 +190,114 @@ def deshacer_operacion():
         )
 
     return redirect(url_for("inicio"))
+
+@app.route("/exportar-json", methods=["POST"])
+def exportar_json():
+    try:
+        cantidad = json_service.exportar_canciones()
+
+        flash(
+            f"Se exportaron {cantidad} canciones al archivo JSON.",
+            "exito"
+        )
+
+    except Exception as error:
+        flash(
+            f"No se pudieron exportar las canciones: {error}",
+            "error"
+        )
+
+    return redirect(url_for("inicio"))
+
+
+@app.route("/importar-json", methods=["POST"])
+def importar_json():
+    try:
+        cantidad = json_service.importar_canciones()
+
+        flash(
+            f"Se importaron {cantidad} canciones nuevas desde JSON.",
+            "exito"
+        )
+
+    except (ValueError, FileNotFoundError) as error:
+        flash(
+            f"No se pudo importar el archivo JSON: {error}",
+            "error"
+        )
+
+    except Exception as error:
+        flash(
+            f"Ocurrió un error durante la importación: {error}",
+            "error"
+        )
+
+    return redirect(url_for("inicio"))
+
+
+@app.route("/buscar-arbol", methods=["GET"])
+def buscar_arbol():
+    valor = request.args.get("codigo", "").strip()
+
+    try:
+        codigo = int(valor)
+        if codigo <= 0:
+            raise ValueError
+    except ValueError:
+        flash("Ingresá un código numérico positivo.", "error")
+        return redirect(url_for("inicio"))
+
+    # Construimos el árbol con los datos actuales de SQLite.
+    arbol = ArbolBusqueda()
+    canciones = repositorio.obtener_todas()
+
+    for cancion in canciones:
+        arbol.insertar(cancion)
+
+    cancion_encontrada, comparaciones_arbol = arbol.buscar(codigo)
+
+    # Búsqueda secuencial por código para comparar los resultados.
+    comparaciones_lista = 0
+    encontrada_lista = None
+
+    for cancion in canciones:
+        comparaciones_lista += 1
+        if cancion.codigo == codigo:
+            encontrada_lista = cancion
+            break
+
+    resultados = (
+        [cancion_encontrada]
+        if cancion_encontrada is not None
+        else []
+    )
+
+    return render_template(
+        "index.html",
+        canciones=resultados,
+        busqueda_arbol_realizada=True,
+        codigo_busqueda=codigo,
+        comparaciones_arbol=comparaciones_arbol,
+        comparaciones_lista=comparaciones_lista,
+        cantidad_historial=historial.cantidad()
+    )
+
+
+@app.route("/ordenar-arbol")
+def ordenar_arbol():
+    arbol = ArbolBusqueda()
+
+    for cancion in repositorio.obtener_todas():
+        arbol.insertar(cancion)
+
+    canciones_ordenadas = arbol.listar_inorden()
+
+    return render_template(
+        "index.html",
+        canciones=canciones_ordenadas,
+        listado_ordenado_arbol=True,
+        cantidad_historial=historial.cantidad()
+    )
 
 
 if __name__ == "__main__":
