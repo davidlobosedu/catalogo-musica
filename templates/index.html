@@ -23,9 +23,7 @@
 
     <main>
 
-        <!-- ========================================
-             1. IMPORTACIÓN Y EXPORTACIÓN JSON
-        ========================================= -->
+        <!-- importacion exportacion json-->
         <section class="acciones-json">
             <h2>Importación y exportación</h2>
 
@@ -48,9 +46,10 @@
             </form>
         </section>
 
-        <!-- ========================================
-             2. BÚSQUEDA MEDIANTE ÁRBOL BINARIO
-        ========================================= -->
+
+
+        <!-- busqueda por arbol binario -->
+
         <section class="busqueda-arbol">
             <h2>Buscar por código con árbol binario</h2>
 
@@ -107,9 +106,7 @@
             </section>
         {% endif %}
 
-        <!-- ========================================
-             3. DESHACER LA ÚLTIMA OPERACIÓN
-        ========================================= -->
+            <!-- pila deshacer ultima operación -->
         <section class="historial-operaciones">
             <h2>Historial de operaciones</h2>
 
@@ -131,9 +128,8 @@
             </form>
         </section>
 
-        <!-- ========================================
-             4. MENSAJES DEL SISTEMA
-        ========================================= -->
+        <!-- mensaje sistema-->
+
         <section class="mensajes">
             {% with mensajes = get_flashed_messages(with_categories=true) %}
                 {% for categoria, mensaje in mensajes %}
@@ -144,9 +140,8 @@
             {% endwith %}
         </section>
 
-        <!-- ========================================
-             5. FORMULARIO PARA AGREGAR CANCIONES
-        ========================================= -->
+        <!-- Form para agregar canciones -->
+
         <section class="formulario-cancion">
             <h2>Agregar canción</h2>
 
@@ -241,9 +236,7 @@
             </form>
         </section>
 
-        <!-- ========================================
-             6. BÚSQUEDA SECUENCIAL DE CANCIONES
-        ========================================= -->
+        <!-- busqueda de canciones-->
         <section class="busqueda-canciones">
             <h2>Buscar canciones</h2>
 
@@ -299,26 +292,108 @@
             </form>
         </section>
 
+        
+        <section class="historial-busquedas">
+            <h2>Historial de búsquedas</h2>
+
+            <a href="{{ url_for('ver_historial_busquedas') }}">
+                Consultar historial
+            </a>
+
+            {% if historial_busquedas is defined %}
+                {% if historial_busquedas %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Criterio</th>
+                                <th>Valor buscado</th>
+                                <th>Resultados</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for busqueda in historial_busquedas | reverse %}
+                                <tr>
+                                    <td>{{ busqueda.criterio }}</td>
+                                    <td>{{ busqueda.valor }}</td>
+                                    <td>{{ busqueda.resultados }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Todavía no hay búsquedas registradas.</p>
+                {% endif %}
+            {% endif %}
+        </section>
+
+
+
         <!-- Resultados y cantidad de comparaciones de la búsqueda secuencial -->
         {% if busqueda_realizada | default(false) %}
-            <section class="resultados-busqueda">
-                <h3>Resultados de la búsqueda</h3>
+        <section class="resultados-busqueda">
+            <h3>Resultados de la búsqueda</h3>
 
-                <p>
-                    Coincidencias encontradas:
-                    {{ canciones | length }}
-                </p>
+            <p>
+                Coincidencias encontradas:
+                {{ canciones | length }}
+            </p>
 
-                <p>
-                    Comparaciones realizadas:
-                    {{ comparaciones }}
-                </p>
-            </section>
+            <p>
+                Comparaciones realizadas:
+                {{ comparaciones }}
+            </p>
+        </section>
         {% endif %}
+                    
 
-        <!-- ========================================
-             7. LISTADO DE CANCIONES
-        ========================================= -->
+        
+
+        <section class="explorar-categorias">
+            <h2>Explorar por categorías</h2>
+
+            <form
+                action="{{ url_for('explorar_categoria') }}"
+                method="GET"
+            >
+                <label for="categoria">
+                    Seleccioná un género musical:
+                </label>
+
+                <select id="categoria" name="categoria" required>
+                    <option value="">-- Elegir categoría --</option>
+
+                    <option value="Rock Argentino">
+                        Rock Argentino
+                    </option>
+
+                    <option value="Rock internacional">
+                        Rock internacional
+                    </option>
+
+                    <option value="Pop">
+                        Pop
+                    </option>
+
+                    <option value="Folclore">
+                        Folclore
+                    </option>
+                </select>
+
+                <button type="submit">
+                    Explorar categoría
+                </button>
+            </form>
+
+            {% if categoria_seleccionada is defined %}
+                <p>
+                    Categoría seleccionada:
+                    <strong>{{ categoria_seleccionada }}</strong>
+                </p>
+            {% endif %}
+        </section>
+
+        <!-- listado de canciones -->
+
         <section class="listado-canciones">
             <h2>Listado de canciones</h2>
 

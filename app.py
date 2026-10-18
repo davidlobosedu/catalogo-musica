@@ -9,6 +9,8 @@ from services.gestor_deshacer import GestorDeshacer
 from services.json_service import JsonService
 from pathlib import Path
 from structures.arbol_busqueda import ArbolBusqueda
+from services.clasificador_categorias import cargar_categorias
+from services.historial_busquedas import HistorialBusquedas
 
 
 app = Flask(__name__)
@@ -18,6 +20,7 @@ repositorio = CancionRepository()
 catalogo = Catalogo()
 historial = HistorialOperaciones()
 gestor_deshacer = GestorDeshacer(repositorio, historial)
+historial_busquedas = HistorialBusquedas(capacidad=10)
 
 
 def convertir_cancion_a_diccionario(cancion):
@@ -52,6 +55,12 @@ def buscar_canciones():
         canciones, comparaciones = catalogo.buscar_secuencial(
             criterio,
             valor
+        )
+
+        historial_busquedas.registrar(
+            criterio,
+            valor,
+            len(canciones)
         )
 
         return render_template(
@@ -299,6 +308,39 @@ def ordenar_arbol():
         cantidad_historial=historial.cantidad()
     )
 
+@app.route("/explorar-categoria", methods=["GET"])
+def explorar_categoria():
+    nombre_categoria = request.args.get("categoria", "").strip()
+
+    arbol = cargar_categorias()
+    categorias = arbol.listar_categorias()
+
+    nodo = arbol.buscar_categoria(nombre_categoria)
+
+    if nodo is None:
+        flash("La categoría seleccionada no existe.", "error")
+        return redirect(url_for("inicio"))
+
+    return render_template(
+        "index.html",
+        canciones=nodo.canciones,
+        categoria_seleccionada=nodo.nombre,
+        categorias=categorias,
+        cantidad_historial=historial.cantidad()
+    )
+
+
+
+@app.route("/historial-busquedas")
+def ver_historial_busquedas():
+    busquedas = historial_busquedas.listar()
+
+    return render_template(
+        "index.html",
+        canciones=repositorio.obtener_todas(),
+        historial_busquedas=busquedas,
+        cantidad_historial=historial.cantidad()
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
