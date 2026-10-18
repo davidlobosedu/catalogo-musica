@@ -13,6 +13,21 @@
     <h1>Catálogo Musical</h1>
     <p>Administrá tu colección de canciones.</p>
 
+    <form action="{{ url_for('deshacer_operacion') }}" method="POST">
+
+         <button
+            type="submit"
+            {% if cantidad_historial == 0 %}disabled{% endif %}
+         >
+            Deshacer última operación
+        </button>
+
+        <span>
+               Operaciones en historial: {{ cantidad_historial }}
+        </span>
+        
+    </form>
+
     <!-- Mensajes del sistema -->
     {% with mensajes = get_flashed_messages(with_categories=true) %}
         {% for categoria, mensaje in mensajes %}
@@ -114,14 +129,21 @@
                         <td>{{ cancion.anio }}</td>
                         <td>{{ cancion.duracion }}</td>
 
-                        <td>
-                            <a href="{{ url_for(
-                                'editar_cancion',
-                                codigo=cancion.codigo
-                            ) }}">
+                       <td>                                       
+                            <a href="{{ url_for('editar_cancion', codigo=cancion.codigo) }}">
                                 Editar
                             </a>
-                        </td>
+
+                            <form
+                                action="{{ url_for('eliminar_cancion', codigo=cancion.codigo) }}"
+                                method="POST"
+                                style="display: inline;"
+                                onsubmit="return confirm('¿Estás seguro de que querés eliminar esta canción?');"
+                            >
+                                <button type="submit">Eliminar</button>
+                            </form>
+
+                       </td> 
                     </tr>
                 {% endfor %}
             </tbody>

@@ -4,6 +4,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from repositories.cancion_repository import CancionRepository
 from models.cancion import Cancion
 from services.catalogo import Catalogo
+from services.historial import HistorialOperaciones
+from services.gestor_deshacer import GestorDeshacer
 
 
 app = Flask(__name__)
@@ -12,11 +14,31 @@ app.secret_key = "clave-desarrollo-catalogo-musical"
 repositorio = CancionRepository()
 catalogo = Catalogo()
 
+historial = HistorialOperaciones()
+gestor_deshacer = GestorDeshacer(repositorio, historial)
+
+
+def convertir_cancion_a_diccionario(cancion):
+    """Convertir una canción en un diccionario para el historial."""
+    return {
+        "codigo": cancion.codigo,
+        "titulo": cancion.titulo,
+        "artista": cancion.artista,
+        "album": cancion.album,
+        "anio": cancion.anio,
+        "duracion": cancion.duracion
+    }
+
 
 @app.route("/")
 def inicio():
     canciones = repositorio.obtener_todas()
-    return render_template("index.html", canciones=canciones)
+
+    return render_template(
+        "index.html",
+        canciones=canciones,
+        cantidad_historial=historial.cantidad()
+    )
 
 
 @app.route("/buscar", methods=["GET"])
@@ -36,7 +58,8 @@ def buscar_canciones():
             criterio_busqueda=criterio,
             valor_busqueda=valor,
             comparaciones=comparaciones,
-            busqueda_realizada=True
+            busqueda_realizada=True,
+            cantidad_historial=historial.cantidad()
         )
 
     except ValueError as error:
@@ -57,6 +80,12 @@ def agregar_cancion():
         )
 
         repositorio.insertar(cancion)
+
+        historial.registrar(
+            "agregar",
+            {"codigo": cancion.codigo}
+        )
+
         flash("Canción agregada correctamente.", "exito")
 
     except ValueError as error:
@@ -82,6 +111,8 @@ def editar_cancion(codigo):
 
     if request.method == "POST":
         try:
+            datos_anteriores = convertir_cancion_a_diccionario(cancion)
+
             cancion_actualizada = Cancion(
                 codigo=codigo,
                 titulo=request.form["titulo"].strip(),
@@ -91,10 +122,18 @@ def editar_cancion(codigo):
                 duracion=int(request.form["duracion"])
             )
 
-            repositorio.modificar(cancion_actualizada)
-            flash("Canción modificada correctamente.", "exito")
+            modificada = repositorio.modificar(cancion_actualizada)
 
-            return redirect(url_for("inicio"))
+            if modificada:
+                historial.registrar(
+                    "modificar",
+                    {"anterior": datos_anteriores}
+                )
+
+                flash("Canción modificada correctamente.", "exito")
+                return redirect(url_for("inicio"))
+
+            flash("No se pudo modificar la canción.", "error")
 
         except ValueError as error:
             flash(
@@ -108,19 +147,43 @@ def editar_cancion(codigo):
 @app.route("/eliminar/<int:codigo>", methods=["POST"])
 def eliminar_cancion(codigo):
     try:
-        eliminado = repositorio.eliminar(codigo)
+        cancion = repositorio.obtener_por_codigo(codigo)
 
-        if eliminado:
+        if cancion is None:
+            flash("No se encontró la canción.", "error")
+            return redirect(url_for("inicio"))
+
+        datos_cancion = convertir_cancion_a_diccionario(cancion)
+        eliminada = repositorio.eliminar(codigo)
+
+        if eliminada:
+            historial.registrar("eliminar", datos_cancion)
             flash("Canción eliminada correctamente.", "exito")
         else:
-            flash(
-                "No se encontró la canción que intentás eliminar.",
-                "error"
-            )
+            flash("No se pudo eliminar la canción.", "error")
 
     except Exception as error:
         flash(
             f"No se pudo eliminar la canción: {error}",
+            "error"
+        )
+
+    return redirect(url_for("inicio"))
+
+
+@app.route("/deshacer", methods=["POST"])
+def deshacer_operacion():
+    try:
+        exito, mensaje = gestor_deshacer.deshacer()
+
+        if exito:
+            flash(mensaje, "exito")
+        else:
+            flash(mensaje, "error")
+
+    except Exception as error:
+        flash(
+            f"No se pudo deshacer la operación: {error}",
             "error"
         )
 

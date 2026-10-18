@@ -21,12 +21,25 @@ h2 {
     color: #344b70;
 }
 
+/* Formularios principales */
 form {
     max-width: 600px;
     padding: 24px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 2px 8px #00000012;
+}
+
+/* Formulario pequeño de eliminación dentro de la tabla */
+table form {
+    display: inline;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 label {
@@ -51,6 +64,13 @@ button {
     cursor: pointer;
 }
 
+button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 button:hover {
     background-color: #243f7b;
 }
@@ -62,10 +82,12 @@ table {
     margin-top: 15px;
 }
 
-th, td {
+th,
+td {
     padding: 12px;
     border: 1px solid #dce1e8;
     text-align: left;
+    vertical-align: middle;
 }
 
 th {
@@ -76,7 +98,6 @@ th {
 tr:nth-child(even) {
     background-color: #f0f3f8;
 }
-
 
 select {
     width: 100%;
@@ -89,4 +110,9 @@ select {
 a {
     margin-left: 12px;
     color: #3157a4;
+}
+
+/* Evita que los botones de acciones queden demasiado juntos */
+table td form button {
+    margin-left: 8px;
 }
