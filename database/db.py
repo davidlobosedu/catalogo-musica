@@ -3,24 +3,26 @@ import sqlite3
 from pathlib import Path
 
 
-# Path carpeta proyecto
-RUTA_PROYECTO = Path(__file__).resolve().parent.parent
-
-# Ubicación del archivo de la BD.
-RUTA_DB = RUTA_PROYECTO / "catalogo.db"
+# Ruta absoluta a la base de datos del proyecto.
+BASE_DIR = Path(__file__).resolve().parent.parent
+RUTA_DB = BASE_DIR / "catalogo.db"
 
 
 def obtener_conexion():
-    """Crear una conexión con la base de datos."""
-    return sqlite3.connect(RUTA_DB)
+    """Abrir una conexión con la base de datos SQLite."""
+    conexion = sqlite3.connect(RUTA_DB)
+    conexion.row_factory = sqlite3.Row
+    return conexion
 
 
 def inicializar_db():
-    """Crear la tabla de canciones si todavía no existe."""
+    """Crear la tabla si no existe y agregar género si falta."""
     conexion = obtener_conexion()
 
     try:
-        conexion.execute("""
+        cursor = conexion.cursor()
+
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS canciones (
                 codigo INTEGER PRIMARY KEY,
                 titulo TEXT NOT NULL,
@@ -30,6 +32,16 @@ def inicializar_db():
                 duracion INTEGER NOT NULL CHECK (duracion > 0)
             )
         """)
+
+        cursor.execute("PRAGMA table_info(canciones)")
+        columnas = [fila["name"] for fila in cursor.fetchall()]
+
+        if "genero" not in columnas:
+            cursor.execute("""
+                ALTER TABLE canciones
+                ADD COLUMN genero TEXT NOT NULL
+                DEFAULT 'Sin especificar'
+            """)
 
         conexion.commit()
 

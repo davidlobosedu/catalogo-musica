@@ -5,7 +5,8 @@
         "artista": "La Renga",
         "album": "La Renga",
         "anio": 1998,
-        "duracion": 314
+        "duracion": 314,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 2,
@@ -13,7 +14,8 @@
         "artista": "Divididos",
         "album": "Acariciando lo aspero",
         "anio": 1991,
-        "duracion": 150
+        "duracion": 150,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 3,
@@ -21,7 +23,8 @@
         "artista": "Sumo",
         "album": "After Chabon",
         "anio": 1987,
-        "duracion": 212
+        "duracion": 212,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 4,
@@ -29,7 +32,8 @@
         "artista": "Sumo",
         "album": "Llegando a los monos",
         "anio": 1986,
-        "duracion": 345
+        "duracion": 345,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 5,
@@ -37,7 +41,8 @@
         "artista": "Los Prisioneros",
         "album": "Corazones",
         "anio": 1990,
-        "duracion": 300
+        "duracion": 300,
+        "genero": "Rock internacional"
     },
     {
         "codigo": 6,
@@ -45,7 +50,8 @@
         "artista": "Los Enanitos Verdes",
         "album": "Big Bang",
         "anio": 1994,
-        "duracion": 210
+        "duracion": 210,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 7,
@@ -53,7 +59,8 @@
         "artista": "Los Enanitos Verdes",
         "album": "Contrarreloj",
         "anio": 1986,
-        "duracion": 210
+        "duracion": 210,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 8,
@@ -61,7 +68,8 @@
         "artista": "Los Abuelos de la Nada",
         "album": "Vasos y besos",
         "anio": 1983,
-        "duracion": 210
+        "duracion": 210,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 9,
@@ -69,7 +77,8 @@
         "artista": "Andres Calamaro",
         "album": "Alta suciedad",
         "anio": 1997,
-        "duracion": 240
+        "duracion": 240,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 10,
@@ -77,7 +86,8 @@
         "artista": "Gustavo Cerati",
         "album": "Ahi vamos",
         "anio": 2006,
-        "duracion": 230
+        "duracion": 230,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 11,
@@ -85,7 +95,8 @@
         "artista": "Gustavo Cerati",
         "album": "Bocanada",
         "anio": 1999,
-        "duracion": 290
+        "duracion": 290,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 12,
@@ -93,7 +104,8 @@
         "artista": "Luis Alberto Spinetta",
         "album": "Peluson of milk",
         "anio": 1991,
-        "duracion": 220
+        "duracion": 220,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 13,
@@ -101,7 +113,8 @@
         "artista": "Almendra",
         "album": "Almendra",
         "anio": 1969,
-        "duracion": 240
+        "duracion": 240,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 14,
@@ -109,7 +122,8 @@
         "artista": "Sui Generis",
         "album": "Confesiones de invierno",
         "anio": 1973,
-        "duracion": 210
+        "duracion": 210,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 15,
@@ -117,7 +131,8 @@
         "artista": "Seru Giran",
         "album": "Seru Giran",
         "anio": 1978,
-        "duracion": 250
+        "duracion": 250,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 16,
@@ -125,7 +140,8 @@
         "artista": "Patricio Rey y sus Redonditos de Ricota",
         "album": "Oktubre",
         "anio": 1986,
-        "duracion": 330
+        "duracion": 330,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 17,
@@ -133,7 +149,8 @@
         "artista": "Patricio Rey y sus Redonditos de Ricota",
         "album": "Un baion para el ojo idiota",
         "anio": 1988,
-        "duracion": 300
+        "duracion": 300,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 18,
@@ -141,7 +158,8 @@
         "artista": "Los Fabulosos Cadillacs",
         "album": "Vasos vacios",
         "anio": 1993,
-        "duracion": 250
+        "duracion": 250,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 19,
@@ -149,7 +167,8 @@
         "artista": "Los Fabulosos Cadillacs",
         "album": "El leon",
         "anio": 1992,
-        "duracion": 260
+        "duracion": 260,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 20,
@@ -157,7 +176,8 @@
         "artista": "Gustavo Cerati",
         "album": "Fuerza natural",
         "anio": 2009,
-        "duracion": 220
+        "duracion": 220,
+        "genero": "Rock Argentino"
     },
     {
         "codigo": 21,
@@ -165,7 +185,8 @@
         "artista": "Michael Jackson",
         "album": "Thriller",
         "anio": 1982,
-        "duracion": 294
+        "duracion": 294,
+        "genero": "Pop"
     },
     {
         "codigo": 22,
@@ -173,7 +194,8 @@
         "artista": "Madonna",
         "album": "Like a Prayer",
         "anio": 1989,
-        "duracion": 340
+        "duracion": 340,
+        "genero": "Pop"
     },
     {
         "codigo": 23,
@@ -181,7 +203,8 @@
         "artista": "Michael Jackson",
         "album": "Thriller",
         "anio": 1982,
-        "duracion": 358
+        "duracion": 358,
+        "genero": "Pop"
     },
     {
         "codigo": 24,
@@ -189,7 +212,8 @@
         "artista": "John Lennon",
         "album": "Imagine",
         "anio": 1971,
-        "duracion": 183
+        "duracion": 183,
+        "genero": "Rock internacional"
     },
     {
         "codigo": 25,
@@ -197,7 +221,8 @@
         "artista": "ABBA",
         "album": "Arrival",
         "anio": 1976,
-        "duracion": 230
+        "duracion": 230,
+        "genero": "Rock internacional"
     },
     {
         "codigo": 26,
@@ -205,7 +230,8 @@
         "artista": "Coldplay",
         "album": "Parachutes",
         "anio": 2000,
-        "duracion": 266
+        "duracion": 266,
+        "genero": "Rock internacional"
     },
     {
         "codigo": 27,
@@ -213,7 +239,8 @@
         "artista": "Coldplay",
         "album": "Viva la Vida",
         "anio": 2008,
-        "duracion": 242
+        "duracion": 242,
+        "genero": "Rock internacional"
     },
     {
         "codigo": 28,
@@ -221,7 +248,8 @@
         "artista": "Mercedes Sosa",
         "album": "Corazon libre",
         "anio": 2005,
-        "duracion": 210
+        "duracion": 210,
+        "genero": "Folclore"
     },
     {
         "codigo": 29,
@@ -229,7 +257,8 @@
         "artista": "Mercedes Sosa",
         "album": "Mujeres argentinas",
         "anio": 1969,
-        "duracion": 240
+        "duracion": 240,
+        "genero": "Folclore"
     },
     {
         "codigo": 30,
@@ -237,14 +266,34 @@
         "artista": "Daniel Toro",
         "album": "Zambas",
         "anio": 1976,
-        "duracion": 220
+        "duracion": 220,
+        "genero": "Folclore"
     },
-        {
+    {
         "codigo": 31,
         "titulo": "La Villerita",
         "artista": "Horacio Guarany",
         "album": "Grandes Exitos",
         "anio": 1989,
-        "duracion": 280
+        "duracion": 280,
+        "genero": "Folclore"
+    },
+    {
+        "codigo": 32,
+        "titulo": "El Rey de la triste felicidad",
+        "artista": "La Renga",
+        "album": "La Renga",
+        "anio": 1998,
+        "duracion": 320,
+        "genero": "Rock Argentino"
+    },
+    {
+        "codigo": 33,
+        "titulo": "El Revelde",
+        "artista": "La Renga",
+        "album": "La Renga",
+        "anio": 1998,
+        "duracion": 380,
+        "genero": "Rock Argentino"
     }
 ]

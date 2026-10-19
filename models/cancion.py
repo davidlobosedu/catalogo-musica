@@ -1,12 +1,13 @@
 
 class Cancion:
-    def __init__(self, codigo, titulo, artista, album, anio, duracion):
+    def __init__(self, codigo, titulo, artista, album, anio, duracion, genero):
         self.codigo = codigo
         self.titulo = titulo
         self.artista = artista
         self.album = album
         self.anio = anio
         self.duracion = duracion
+        self.genero = genero
 
     @property
     def codigo(self):
@@ -68,8 +69,18 @@ class Cancion:
             raise ValueError("La duración debe ser un entero positivo en segundos.")
         self._duracion = valor
 
+    @property
+    def genero(self):
+        return self._genero
+
+    @genero.setter
+    def genero(self, valor):
+        if not isinstance(valor, str) or not valor.strip():
+            raise ValueError("El género musical no puede estar vacío.")
+        self._genero = valor.strip()
+
     def __str__(self):
         return (
             f"{self.titulo} - {self.artista} "
-            f"({self.anio})"
+            f"({self.anio}) - Género: {self.genero}"
         )

@@ -15,6 +15,7 @@ class JsonService:
         self.repositorio = CancionRepository()
 
     def exportar_canciones(self):
+        """Exportar todas las canciones, incluido su género, a JSON."""
         canciones = self.repositorio.obtener_todas()
 
         datos = [
@@ -25,6 +26,7 @@ class JsonService:
                 "album": cancion.album,
                 "anio": cancion.anio,
                 "duracion": cancion.duracion,
+                "genero": cancion.genero,
             }
             for cancion in canciones
         ]
@@ -37,40 +39,75 @@ class JsonService:
         return len(datos)
 
     def importar_canciones(self):
+        """Importar canciones nuevas desde JSON sin duplicar códigos."""
         if not RUTA_JSON.exists():
             raise FileNotFoundError(
                 f"No existe el archivo JSON: {RUTA_JSON}"
             )
 
-        with open(RUTA_JSON, "r", encoding="utf-8") as archivo:
-            datos = json.load(archivo)
+        try:
+            with open(RUTA_JSON, "r", encoding="utf-8-sig") as archivo:
+                datos = json.load(archivo)
+        except json.JSONDecodeError as error:
+            raise ValueError(
+                f"El archivo JSON tiene un formato inválido: {error}"
+            ) from error
 
         if not isinstance(datos, list):
-            raise ValueError("El JSON debe contener una lista de canciones.")
-
-        codigos = set()
-        canciones = []
-
-        for dato in datos:
-            if not isinstance(dato, dict):
-                raise ValueError("Cada canción debe ser un objeto JSON.")
-
-            campos = {
-                "codigo", "titulo", "artista",
-                "album", "anio", "duracion"
-            }
-
-            if not campos.issubset(dato):
-                raise ValueError("Una canción tiene campos faltantes.")
-
-            cancion = Cancion(
-                dato["codigo"],
-                dato["titulo"],
-                dato["artista"],
-                dato["album"],
-                dato["anio"],
-                dato["duracion"],
+            raise ValueError(
+                "El JSON debe contener una lista de canciones."
             )
+
+        campos_obligatorios = {
+            "codigo",
+            "titulo",
+            "artista",
+            "album",
+            "anio",
+            "duracion",
+        }
+
+        canciones = []
+        codigos = set()
+
+        for numero, dato in enumerate(datos, start=1):
+            if not isinstance(dato, dict):
+                raise ValueError(
+                    f"El elemento {numero} no es un objeto JSON válido."
+                )
+
+            faltantes = campos_obligatorios - dato.keys()
+
+            if faltantes:
+                raise ValueError(
+                    f"La canción del elemento {numero} no contiene "
+                    f"los campos obligatorios: {', '.join(sorted(faltantes))}."
+                )
+
+            try:
+                codigo = dato["codigo"]
+                titulo = dato["titulo"]
+                artista = dato["artista"]
+                album = dato["album"]
+                anio = dato["anio"]
+                duracion = dato["duracion"]
+                genero = dato.get("genero") or "Sin especificar"
+
+                cancion = Cancion(
+                    codigo=codigo,
+                    titulo=titulo,
+                    artista=artista,
+                    album=album,
+                    anio=anio,
+                    duracion=duracion,
+                    genero=genero,
+                )
+
+            except (ValueError, TypeError) as error:
+                raise ValueError(
+                    f"Datos inválidos en la canción del elemento "
+                    f"{numero}: {error}"
+                ) from error
 
             if cancion.codigo in codigos:
                 raise ValueError(
@@ -80,7 +117,6 @@ class JsonService:
             codigos.add(cancion.codigo)
             canciones.append(cancion)
 
-        # Insertamos solo códigos que todavía no existen.
         existentes = {
             cancion.codigo
             for cancion in self.repositorio.obtener_todas()
@@ -91,6 +127,7 @@ class JsonService:
         for cancion in canciones:
             if cancion.codigo not in existentes:
                 self.repositorio.insertar(cancion)
+                existentes.add(cancion.codigo)
                 insertadas += 1
 
         return insertadas

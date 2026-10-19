@@ -6,25 +6,22 @@ from models.cancion import Cancion
 class CancionRepository:
 
     def insertar(self, cancion):
-        """Guardar una canción en la base de datos."""
         conexion = obtener_conexion()
 
         try:
-            conexion.execute(
-                """
+            conexion.execute("""
                 INSERT INTO canciones
-                (codigo, titulo, artista, album, anio, duracion)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    cancion.codigo,
-                    cancion.titulo,
-                    cancion.artista,
-                    cancion.album,
-                    cancion.anio,
-                    cancion.duracion
-                )
-            )
+                (codigo, titulo, artista, album, anio, duracion, genero)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                cancion.codigo,
+                cancion.titulo,
+                cancion.artista,
+                cancion.album,
+                cancion.anio,
+                cancion.duracion,
+                cancion.genero
+            ))
 
             conexion.commit()
 
@@ -32,52 +29,35 @@ class CancionRepository:
             conexion.close()
 
     def obtener_todas(self):
-        """Consultar todas las canciones."""
         conexion = obtener_conexion()
 
         try:
-            cursor = conexion.execute(
-                """
-                SELECT codigo, titulo, artista, album, anio, duracion
+            cursor = conexion.execute("""
+                SELECT codigo, titulo, artista, album, anio, duracion, genero
                 FROM canciones
                 ORDER BY codigo
-                """
-            )
+            """)
 
-            filas = cursor.fetchall()
-
-            canciones = []
-
-            for fila in filas:
-                cancion = Cancion(
-                    fila[0],
-                    fila[1],
-                    fila[2],
-                    fila[3],
-                    fila[4],
-                    fila[5]
+            return [
+                Cancion(
+                    fila[0], fila[1], fila[2], fila[3],
+                    fila[4], fila[5], fila[6]
                 )
-
-                canciones.append(cancion)
-
-            return canciones
+                for fila in cursor.fetchall()
+            ]
 
         finally:
             conexion.close()
 
     def obtener_por_codigo(self, codigo):
-        """Buscar una canción mediante su código."""
         conexion = obtener_conexion()
 
         try:
-            cursor = conexion.execute(
-                """
-                SELECT codigo, titulo, artista, album, anio, duracion
+            cursor = conexion.execute("""
+                SELECT codigo, titulo, artista, album, anio, duracion, genero
                 FROM canciones
                 WHERE codigo = ?
-                """,
-                (codigo,)
-            )
+            """, (codigo,))
 
             fila = cursor.fetchone()
 
@@ -85,48 +65,43 @@ class CancionRepository:
                 return None
 
             return Cancion(
-                fila[0],
-                fila[1],
-                fila[2],
-                fila[3],
-                fila[4],
-                fila[5]
+                fila[0], fila[1], fila[2], fila[3],
+                fila[4], fila[5], fila[6]
             )
 
         finally:
             conexion.close()
 
-    
     def modificar(self, cancion):
-        """Actualizar una canción existente."""
         conexion = obtener_conexion()
 
         try:
-            cursor = conexion.execute(
-                """
+            cursor = conexion.execute("""
                 UPDATE canciones
-                SET titulo = ?, artista = ?, album = ?,
-                    anio = ?, duracion = ?
+                SET titulo = ?,
+                    artista = ?,
+                    album = ?,
+                    anio = ?,
+                    duracion = ?,
+                    genero = ?
                 WHERE codigo = ?
-                """,
-                (
-                    cancion.titulo,
-                    cancion.artista,
-                    cancion.album,
-                    cancion.anio,
-                    cancion.duracion,
-                    cancion.codigo
-                )
-            )
+            """, (
+                cancion.titulo,
+                cancion.artista,
+                cancion.album,
+                cancion.anio,
+                cancion.duracion,
+                cancion.genero,
+                cancion.codigo
+            ))
 
             conexion.commit()
             return cursor.rowcount > 0
 
         finally:
             conexion.close()
-    
+
     def eliminar(self, codigo):
-        """Eliminar una canción mediante su código."""
         conexion = obtener_conexion()
 
         try:

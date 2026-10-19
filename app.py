@@ -7,7 +7,6 @@ from services.catalogo import Catalogo
 from services.historial import HistorialOperaciones
 from services.gestor_deshacer import GestorDeshacer
 from services.json_service import JsonService
-from pathlib import Path
 from structures.arbol_busqueda import ArbolBusqueda
 from services.clasificador_categorias import cargar_categorias
 from services.historial_busquedas import HistorialBusquedas
@@ -15,6 +14,7 @@ from services.historial_busquedas import HistorialBusquedas
 
 app = Flask(__name__)
 app.secret_key = "clave-desarrollo-catalogo-musical"
+
 json_service = JsonService()
 repositorio = CancionRepository()
 catalogo = Catalogo()
@@ -31,8 +31,22 @@ def convertir_cancion_a_diccionario(cancion):
         "artista": cancion.artista,
         "album": cancion.album,
         "anio": cancion.anio,
-        "duracion": cancion.duracion
+        "duracion": cancion.duracion,
+        "genero": cancion.genero
     }
+
+
+def obtener_cancion_desde_formulario(codigo):
+    """Construir una canción validando los datos recibidos del formulario."""
+    return Cancion(
+        codigo=codigo,
+        titulo=request.form.get("titulo", "").strip(),
+        artista=request.form.get("artista", "").strip(),
+        album=request.form.get("album", "").strip(),
+        anio=int(request.form.get("anio", "")),
+        duracion=int(request.form.get("duracion", "")),
+        genero=request.form.get("genero", "").strip()
+    )
 
 
 @app.route("/")
@@ -81,13 +95,8 @@ def buscar_canciones():
 @app.route("/agregar", methods=["POST"])
 def agregar_cancion():
     try:
-        cancion = Cancion(
-            codigo=int(request.form["codigo"]),
-            titulo=request.form["titulo"].strip(),
-            artista=request.form["artista"].strip(),
-            album=request.form["album"].strip(),
-            anio=int(request.form["anio"]),
-            duracion=int(request.form["duracion"])
+        cancion = obtener_cancion_desde_formulario(
+            codigo=int(request.form.get("codigo", ""))
         )
 
         repositorio.insertar(cancion)
@@ -124,14 +133,7 @@ def editar_cancion(codigo):
         try:
             datos_anteriores = convertir_cancion_a_diccionario(cancion)
 
-            cancion_actualizada = Cancion(
-                codigo=codigo,
-                titulo=request.form["titulo"].strip(),
-                artista=request.form["artista"].strip(),
-                album=request.form["album"].strip(),
-                anio=int(request.form["anio"]),
-                duracion=int(request.form["duracion"])
-            )
+            cancion_actualizada = obtener_cancion_desde_formulario(codigo)
 
             modificada = repositorio.modificar(cancion_actualizada)
 
@@ -152,7 +154,17 @@ def editar_cancion(codigo):
                 "error"
             )
 
-    return render_template("editar.html", cancion=cancion)
+        except Exception as error:
+            flash(
+                f"Ocurrió un error al modificar la canción: {error}",
+                "error"
+            )
+
+    return render_template(
+        "editar.html",
+        cancion=cancion,
+        cantidad_historial=historial.cantidad()
+    )
 
 
 @app.route("/eliminar/<int:codigo>", methods=["POST"])
@@ -199,6 +211,7 @@ def deshacer_operacion():
         )
 
     return redirect(url_for("inicio"))
+
 
 @app.route("/exportar-json", methods=["POST"])
 def exportar_json():
@@ -250,13 +263,14 @@ def buscar_arbol():
 
     try:
         codigo = int(valor)
+
         if codigo <= 0:
             raise ValueError
+
     except ValueError:
         flash("Ingresá un código numérico positivo.", "error")
         return redirect(url_for("inicio"))
 
-    # Construimos el árbol con los datos actuales de SQLite.
     arbol = ArbolBusqueda()
     canciones = repositorio.obtener_todas()
 
@@ -265,12 +279,12 @@ def buscar_arbol():
 
     cancion_encontrada, comparaciones_arbol = arbol.buscar(codigo)
 
-    # Búsqueda secuencial por código para comparar los resultados.
     comparaciones_lista = 0
     encontrada_lista = None
 
     for cancion in canciones:
         comparaciones_lista += 1
+
         if cancion.codigo == codigo:
             encontrada_lista = cancion
             break
@@ -308,13 +322,13 @@ def ordenar_arbol():
         cantidad_historial=historial.cantidad()
     )
 
+
 @app.route("/explorar-categoria", methods=["GET"])
 def explorar_categoria():
     nombre_categoria = request.args.get("categoria", "").strip()
 
     arbol = cargar_categorias()
     categorias = arbol.listar_categorias()
-
     nodo = arbol.buscar_categoria(nombre_categoria)
 
     if nodo is None:
@@ -330,7 +344,6 @@ def explorar_categoria():
     )
 
 
-
 @app.route("/historial-busquedas")
 def ver_historial_busquedas():
     busquedas = historial_busquedas.listar()
@@ -342,5 +355,38 @@ def ver_historial_busquedas():
         cantidad_historial=historial.cantidad()
     )
 
+
+@app.route("/estadisticas")
+def ver_estadisticas():
+    canciones = repositorio.obtener_todas()
+    arbol = cargar_categorias()
+
+    nombres_categorias = [
+        "Rock Argentino",
+        "Rock internacional",
+        "Pop",
+        "Folclore"
+    ]
+
+    estadisticas = {}
+
+    for nombre in nombres_categorias:
+        categoria = arbol.buscar_categoria(nombre)
+
+        if categoria is not None:
+            estadisticas[nombre] = len(categoria.canciones)
+        else:
+            estadisticas[nombre] = 0
+
+    return render_template(
+        "index.html",
+        canciones=canciones,
+        total_canciones=len(canciones),
+        estadisticas=estadisticas,
+        cantidad_historial=historial.cantidad()
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+

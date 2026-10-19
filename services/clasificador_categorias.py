@@ -4,6 +4,24 @@ from structures.arbol_categorias import ArbolCategorias
 
 
 def clasificar_cancion(cancion):
+    """
+    Clasificar según el género guardado en la canción.
+    Si el género no corresponde a una categoría existente,
+    utilizar reglas por artista como alternativa.
+    """
+    genero = (cancion.genero or "").strip().casefold()
+
+    generos_validos = {
+        "rock argentino": "Rock Argentino",
+        "rock internacional": "Rock internacional",
+        "pop": "Pop",
+        "folclore": "Folclore",
+    }
+
+    if genero in generos_validos:
+        return generos_validos[genero]
+
+    # Compatibilidad con canciones antiguas o sin género reconocido.
     artista = cancion.artista.casefold()
 
     artistas_rock_argentino = {
@@ -27,17 +45,17 @@ def clasificar_cancion(cancion):
         "daniel toro",
     }
 
-    if artista in artistas_rock_argentino:
-        return "Rock Argentino"
-
-    if artista in artistas_folclore:
-        return "Folclore"
-
     artistas_pop = {
         "madonna",
         "michael jackson",
         "abba",
     }
+
+    if artista in artistas_rock_argentino:
+        return "Rock Argentino"
+
+    if artista in artistas_folclore:
+        return "Folclore"
 
     if artista in artistas_pop:
         return "Pop"
@@ -46,6 +64,7 @@ def clasificar_cancion(cancion):
 
 
 def cargar_categorias():
+    """Construir el árbol con las canciones almacenadas en SQLite."""
     repositorio = CancionRepository()
     arbol = ArbolCategorias()
 
@@ -73,4 +92,6 @@ if __name__ == "__main__":
         "Folclore",
     ]:
         nodo = arbol.buscar_categoria(nombre)
-        print(f"{nombre}: {len(nodo.canciones)} canciones")
+
+        if nodo is not None:
+            print(f"{nombre}: {len(nodo.canciones)} canciones")

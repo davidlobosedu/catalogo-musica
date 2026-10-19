@@ -23,43 +23,25 @@
 
     <main>
 
-        <!-- importacion exportacion json-->
+        <!-- Importación y exportación JSON -->
         <section class="acciones-json">
             <h2>Importación y exportación</h2>
 
-            <form
-                action="{{ url_for('exportar_json') }}"
-                method="POST"
-            >
-                <button type="submit">
-                    Exportar canciones a JSON
-                </button>
+            <form action="{{ url_for('exportar_json') }}" method="POST">
+                <button type="submit">Exportar canciones a JSON</button>
             </form>
 
-            <form
-                action="{{ url_for('importar_json') }}"
-                method="POST"
-            >
-                <button type="submit">
-                    Importar canciones desde JSON
-                </button>
+            <form action="{{ url_for('importar_json') }}" method="POST">
+                <button type="submit">Importar canciones desde JSON</button>
             </form>
         </section>
 
-
-
-        <!-- busqueda por arbol binario -->
-
+        <!-- Búsqueda por árbol binario -->
         <section class="busqueda-arbol">
             <h2>Buscar por código con árbol binario</h2>
 
-            <form
-                action="{{ url_for('buscar_arbol') }}"
-                method="GET"
-            >
-                <label for="codigo-arbol">
-                    Código de la canción:
-                </label>
+            <form action="{{ url_for('buscar_arbol') }}" method="GET">
+                <label for="codigo-arbol">Código de la canción:</label>
 
                 <input
                     type="number"
@@ -69,44 +51,37 @@
                     required
                 >
 
-                <button type="submit">
-                    Buscar en el árbol
-                </button>
+                <button type="submit">Buscar en el árbol</button>
             </form>
 
-            <form
-                action="{{ url_for('ordenar_arbol') }}"
-                method="GET"
-            >
+            <form action="{{ url_for('ordenar_arbol') }}" method="GET">
                 <button type="submit">
                     Listar canciones ordenadas por código
                 </button>
             </form>
         </section>
 
-        <!-- Resultados y comparación de búsquedas en el árbol -->
+        <!-- Resultados de la búsqueda en el árbol -->
+        
         {% if busqueda_arbol_realizada | default(false) %}
             <section class="resultados-arbol">
                 <h3>Comparación de búsquedas</h3>
 
-                <p>
-                    Código buscado:
-                    {{ codigo_busqueda }}
-                </p>
+                <p>Código buscado: {{ codigo_busqueda }}</p>
 
-                <p>
-                    Comparaciones en la lista:
-                    {{ comparaciones_lista }}
-                </p>
+                {% if canciones %}
+                    <p>Resultado: canción encontrada.</p>
+                {% else %}
+                    <p>Resultado: no se encontró ninguna canción con ese código.</p>
+                {% endif %}
 
-                <p>
-                    Comparaciones en el árbol:
-                    {{ comparaciones_arbol }}
-                </p>
+                <p>Comparaciones en la lista: {{ comparaciones_lista }}</p>
+                <p>Comparaciones en el árbol: {{ comparaciones_arbol }}</p>
             </section>
         {% endif %}
 
-            <!-- pila deshacer ultima operación -->
+
+        <!-- Pila para deshacer operaciones -->
         <section class="historial-operaciones">
             <h2>Historial de operaciones</h2>
 
@@ -122,14 +97,12 @@
                 </button>
 
                 <span>
-                    Operaciones en historial:
-                    {{ cantidad_historial }}
+                    Operaciones en historial: {{ cantidad_historial }}
                 </span>
             </form>
         </section>
 
-        <!-- mensaje sistema-->
-
+        <!-- Mensajes del sistema -->
         <section class="mensajes">
             {% with mensajes = get_flashed_messages(with_categories=true) %}
                 {% for categoria, mensaje in mensajes %}
@@ -140,8 +113,7 @@
             {% endwith %}
         </section>
 
-        <!-- Form para agregar canciones -->
-
+        <!-- Formulario para agregar canciones -->
         <section class="formulario-cancion">
             <h2>Agregar canción</h2>
 
@@ -150,10 +122,7 @@
                 method="POST"
             >
                 <div class="campo">
-                    <label for="codigo">
-                        Código:
-                    </label>
-
+                    <label for="codigo">Código:</label>
                     <input
                         type="number"
                         id="codigo"
@@ -164,10 +133,7 @@
                 </div>
 
                 <div class="campo">
-                    <label for="titulo">
-                        Título:
-                    </label>
-
+                    <label for="titulo">Título:</label>
                     <input
                         type="text"
                         id="titulo"
@@ -177,10 +143,7 @@
                 </div>
 
                 <div class="campo">
-                    <label for="artista">
-                        Artista:
-                    </label>
-
+                    <label for="artista">Artista:</label>
                     <input
                         type="text"
                         id="artista"
@@ -190,10 +153,7 @@
                 </div>
 
                 <div class="campo">
-                    <label for="album">
-                        Álbum:
-                    </label>
-
+                    <label for="album">Álbum:</label>
                     <input
                         type="text"
                         id="album"
@@ -203,10 +163,7 @@
                 </div>
 
                 <div class="campo">
-                    <label for="anio">
-                        Año:
-                    </label>
-
+                    <label for="anio">Año:</label>
                     <input
                         type="number"
                         id="anio"
@@ -217,10 +174,7 @@
                 </div>
 
                 <div class="campo">
-                    <label for="duracion">
-                        Duración en segundos:
-                    </label>
-
+                    <label for="duracion">Duración en segundos:</label>
                     <input
                         type="number"
                         id="duracion"
@@ -230,13 +184,26 @@
                     >
                 </div>
 
-                <button type="submit">
-                    Guardar canción
-                </button>
+                <div class="campo">
+                    <label for="genero">Género musical:</label>
+                    <select id="genero" name="genero" required>
+                        <option value="">-- Seleccionar género --</option>
+                        <option value="Rock Argentino">Rock Argentino</option>
+                        <option value="Rock internacional">Rock internacional</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Folclore">Folclore</option>
+                        <option value="Jazz">Jazz</option>
+                        <option value="Clásica">Clásica</option>
+                        <option value="Electrónica">Electrónica</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <button type="submit">Guardar canción</button>
             </form>
         </section>
 
-        <!-- busqueda de canciones-->
+        <!-- Búsqueda secuencial -->
         <section class="busqueda-canciones">
             <h2>Buscar canciones</h2>
 
@@ -245,33 +212,17 @@
                 method="GET"
             >
                 <div class="campo">
-                    <label for="criterio">
-                        Buscar por:
-                    </label>
+                    <label for="criterio">Buscar por:</label>
 
-                    <select
-                        id="criterio"
-                        name="criterio"
-                        required
-                    >
-                        <option value="titulo">
-                            Título
-                        </option>
-
-                        <option value="artista">
-                            Artista
-                        </option>
-
-                        <option value="album">
-                            Álbum
-                        </option>
+                    <select id="criterio" name="criterio" required>
+                        <option value="titulo">Título</option>
+                        <option value="artista">Artista</option>
+                        <option value="album">Álbum</option>
                     </select>
                 </div>
 
                 <div class="campo">
-                    <label for="valor">
-                        Texto exacto a buscar:
-                    </label>
+                    <label for="valor">Texto a buscar:</label>
 
                     <input
                         type="text"
@@ -282,17 +233,13 @@
                     >
                 </div>
 
-                <button type="submit">
-                    Buscar
-                </button>
+                <button type="submit">Buscar</button>
 
-                <a href="{{ url_for('inicio') }}">
-                    Ver todas
-                </a>
+                <a href="{{ url_for('inicio') }}">Ver todas</a>
             </form>
         </section>
 
-        
+        <!-- Historial de búsquedas -->
         <section class="historial-busquedas">
             <h2>Historial de búsquedas</h2>
 
@@ -310,6 +257,7 @@
                                 <th>Resultados</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             {% for busqueda in historial_busquedas | reverse %}
                                 <tr>
@@ -326,28 +274,57 @@
             {% endif %}
         </section>
 
+        <!-- Estadísticas -->
+        <section class="estadisticas">
+            <h2>Estadísticas del catálogo</h2>
 
+            <a href="{{ url_for('ver_estadisticas') }}">
+                Consultar estadísticas
+            </a>
 
-        <!-- Resultados y cantidad de comparaciones de la búsqueda secuencial -->
-        {% if busqueda_realizada | default(false) %}
-        <section class="resultados-busqueda">
-            <h3>Resultados de la búsqueda</h3>
+            {% if estadisticas is defined %}
+                <p>
+                    <strong>Total de canciones:</strong>
+                    {{ total_canciones }}
+                </p>
 
-            <p>
-                Coincidencias encontradas:
-                {{ canciones | length }}
-            </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Cantidad de canciones</th>
+                        </tr>
+                    </thead>
 
-            <p>
-                Comparaciones realizadas:
-                {{ comparaciones }}
-            </p>
+                    <tbody>
+                        {% for categoria, cantidad in estadisticas.items() %}
+                            <tr>
+                                <td>{{ categoria }}</td>
+                                <td>{{ cantidad }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         </section>
+
+        <!-- Resultados de la búsqueda secuencial -->
+        {% if busqueda_realizada | default(false) %}
+            <section class="resultados-busqueda">
+                <h3>Resultados de la búsqueda</h3>
+
+                <p>
+                    Coincidencias encontradas:
+                    {{ canciones | length }}
+                </p>
+
+                <p>
+                    Comparaciones realizadas: {{ comparaciones }}
+                </p>
+            </section>
         {% endif %}
-                    
 
-        
-
+        <!-- Exploración por categorías -->
         <section class="explorar-categorias">
             <h2>Explorar por categorías</h2>
 
@@ -355,33 +332,21 @@
                 action="{{ url_for('explorar_categoria') }}"
                 method="GET"
             >
-                <label for="categoria">
-                    Seleccioná un género musical:
-                </label>
+                <label for="categoria">Seleccioná un género musical:</label>
 
                 <select id="categoria" name="categoria" required>
                     <option value="">-- Elegir categoría --</option>
-
-                    <option value="Rock Argentino">
-                        Rock Argentino
-                    </option>
-
-                    <option value="Rock internacional">
-                        Rock internacional
-                    </option>
-
-                    <option value="Pop">
-                        Pop
-                    </option>
-
-                    <option value="Folclore">
-                        Folclore
-                    </option>
+                    <option value="Rock Argentino">Rock Argentino</option>
+                    <option value="Rock internacional">Rock internacional</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Folclore">Folclore</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Clásica">Clásica</option>
+                    <option value="Electrónica">Electrónica</option>
+                    <option value="Otro">Otro</option>
                 </select>
 
-                <button type="submit">
-                    Explorar categoría
-                </button>
+                <button type="submit">Explorar categoría</button>
             </form>
 
             {% if categoria_seleccionada is defined %}
@@ -392,8 +357,7 @@
             {% endif %}
         </section>
 
-        <!-- listado de canciones -->
-
+        <!-- Listado de canciones -->
         <section class="listado-canciones">
             <h2>Listado de canciones</h2>
 
@@ -408,6 +372,7 @@
                                 <th>Álbum</th>
                                 <th>Año</th>
                                 <th>Duración (segundos)</th>
+                                <th>Género musical</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -421,6 +386,7 @@
                                     <td>{{ cancion.album }}</td>
                                     <td>{{ cancion.anio }}</td>
                                     <td>{{ cancion.duracion }}</td>
+                                    <td>{{ cancion.genero }}</td>
 
                                     <td class="acciones-cancion">
                                         <a

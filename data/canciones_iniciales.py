@@ -47,11 +47,11 @@ def cargar_canciones_iniciales():
     insertadas = 0
 
     for dato in datos:
-        codigo, titulo, artista, album, anio, duracion = dato
+        codigo, titulo, artista, album, anio, duracion, genero = dato
 
         if codigo not in existentes:
             cancion = Cancion(
-                codigo, titulo, artista, album, anio, duracion
+                codigo, titulo, artista, album, anio, duracion, genero
             )
             repositorio.insertar(cancion)
             insertadas += 1
