@@ -19,7 +19,8 @@ if cancion is None:
         "Artista de prueba",
         "Album de prueba",
         2020,
-        180
+        180,
+        genero="Desconocido"
     )
 
     repositorio.insertar(cancion)

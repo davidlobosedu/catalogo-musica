@@ -18,7 +18,8 @@ cancion = Cancion(
     "Soda Stereo",
     "Canción animal",
     1990,
-    218
+    218,
+    "Rock Argentino"
 )
 
 # Agregar la canción a Rock Argentino.

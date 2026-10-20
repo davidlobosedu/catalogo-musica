@@ -5,10 +5,10 @@ from structures.arbol_busqueda import ArbolBusqueda
 arbol = ArbolBusqueda()
 
 canciones = [
-    Cancion(30, "Persiana americana", "Soda Stereo", "Signos", 1986, 270),
-    Cancion(10, "De música ligera", "Soda Stereo", "Canción animal", 1990, 218),
-    Cancion(20, "Lamento boliviano", "Los Enanitos Verdes", "Big Bang", 1994, 210),
-    Cancion(40, "Flaca", "Andrés Calamaro", "Alta suciedad", 1997, 240),
+    Cancion(30, "Persiana americana", "Soda Stereo", "Signos", 1986, 270, "Rock Argentino"),
+    Cancion(10, "De música ligera", "Soda Stereo", "Canción animal", 1990, 218, "Rock Argentino"),
+    Cancion(20, "Lamento boliviano", "Los Enanitos Verdes", "Big Bang", 1994, 210, "Rock Argentino"),
+    Cancion(40, "Flaca", "Andrés Calamaro", "Alta suciedad", 1997, 240, "Rock Argentino"),
 ]
 
 print("Insertando canciones:")

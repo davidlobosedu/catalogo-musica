@@ -23,7 +23,8 @@ try:
         "Soda Stereo",
         "Signos",
         1986,
-        270
+        270,
+        "Rock Argentino"
     )
 
     repositorio.insertar(cancion)

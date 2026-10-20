@@ -7,7 +7,8 @@ cancion = Cancion(
     "Soda Stereo",
     "Canción animal",
     1990,
-    218
+    218,
+    "Rock Argentino" 
 )
 
 print("Canción original:")
