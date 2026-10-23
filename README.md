@@ -8,9 +8,7 @@ El proyecto utiliza Flask para la interfaz web y SQLite para almacenar la inform
 
 ## Integrantes
 
-- [Nombre y apellido del integrante 1]
-- [Nombre y apellido del integrante 2]
-- [Nombre y apellido del integrante 3]
+- David Lobos
 
 ## Tecnologías utilizadas
 
