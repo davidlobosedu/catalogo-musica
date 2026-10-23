@@ -1,5 +1,7 @@
-
 from flask import Flask, render_template, request, redirect, url_for, flash
+
+from database.db import inicializar_db
+from data.canciones_iniciales import cargar_canciones_iniciales
 
 from repositories.cancion_repository import CancionRepository
 from models.cancion import Cancion
@@ -12,6 +14,23 @@ from services.clasificador_categorias import cargar_categorias
 from services.historial_busquedas import HistorialBusquedas
 
 
+# ------------------------------------------------------------
+# 1. Preparar la base de datos y cargar los datos iniciales
+# ------------------------------------------------------------
+
+# Crea la tabla si todavía no existe y agrega la columna genero
+# si la base de datos ya existía sin esa columna.
+inicializar_db()
+
+# Agrega las canciones iniciales que todavía no estén guardadas.
+# No duplica las canciones que ya existen.
+cargar_canciones_iniciales()
+
+
+# ------------------------------------------------------------
+# 2. Crear la aplicación Flask y los objetos que utiliza
+# ------------------------------------------------------------
+
 app = Flask(__name__)
 app.secret_key = "clave-desarrollo-catalogo-musical"
 
@@ -22,6 +41,10 @@ historial = HistorialOperaciones()
 gestor_deshacer = GestorDeshacer(repositorio, historial)
 historial_busquedas = HistorialBusquedas(capacidad=10)
 
+
+# ------------------------------------------------------------
+# 3. Funciones auxiliares
+# ------------------------------------------------------------
 
 def convertir_cancion_a_diccionario(cancion):
     """Convertir una canción en un diccionario para el historial."""
@@ -49,6 +72,10 @@ def obtener_cancion_desde_formulario(codigo):
     )
 
 
+# ------------------------------------------------------------
+# 4. Página principal
+# ------------------------------------------------------------
+
 @app.route("/")
 def inicio():
     canciones = repositorio.obtener_todas()
@@ -59,6 +86,10 @@ def inicio():
         cantidad_historial=historial.cantidad()
     )
 
+
+# ------------------------------------------------------------
+# 5. Búsqueda secuencial por título, artista o álbum
+# ------------------------------------------------------------
 
 @app.route("/buscar", methods=["GET"])
 def buscar_canciones():
@@ -92,6 +123,10 @@ def buscar_canciones():
         return redirect(url_for("inicio"))
 
 
+# ------------------------------------------------------------
+# 6. Agregar una canción
+# ------------------------------------------------------------
+
 @app.route("/agregar", methods=["POST"])
 def agregar_cancion():
     try:
@@ -121,6 +156,10 @@ def agregar_cancion():
     return redirect(url_for("inicio"))
 
 
+# ------------------------------------------------------------
+# 7. Editar una canción
+# ------------------------------------------------------------
+
 @app.route("/editar/<int:codigo>", methods=["GET", "POST"])
 def editar_cancion(codigo):
     cancion = repositorio.obtener_por_codigo(codigo)
@@ -131,6 +170,7 @@ def editar_cancion(codigo):
 
     if request.method == "POST":
         try:
+            # Guardamos los datos anteriores para permitir deshacer.
             datos_anteriores = convertir_cancion_a_diccionario(cancion)
 
             cancion_actualizada = obtener_cancion_desde_formulario(codigo)
@@ -167,6 +207,10 @@ def editar_cancion(codigo):
     )
 
 
+# ------------------------------------------------------------
+# 8. Eliminar una canción
+# ------------------------------------------------------------
+
 @app.route("/eliminar/<int:codigo>", methods=["POST"])
 def eliminar_cancion(codigo):
     try:
@@ -176,6 +220,7 @@ def eliminar_cancion(codigo):
             flash("No se encontró la canción.", "error")
             return redirect(url_for("inicio"))
 
+        # Guardamos los datos para poder recuperar la canción al deshacer.
         datos_cancion = convertir_cancion_a_diccionario(cancion)
         eliminada = repositorio.eliminar(codigo)
 
@@ -193,6 +238,10 @@ def eliminar_cancion(codigo):
 
     return redirect(url_for("inicio"))
 
+
+# ------------------------------------------------------------
+# 9. Deshacer la última operación compatible
+# ------------------------------------------------------------
 
 @app.route("/deshacer", methods=["POST"])
 def deshacer_operacion():
@@ -213,6 +262,10 @@ def deshacer_operacion():
     return redirect(url_for("inicio"))
 
 
+# ------------------------------------------------------------
+# 10. Exportar las canciones a JSON
+# ------------------------------------------------------------
+
 @app.route("/exportar-json", methods=["POST"])
 def exportar_json():
     try:
@@ -231,6 +284,10 @@ def exportar_json():
 
     return redirect(url_for("inicio"))
 
+
+# ------------------------------------------------------------
+# 11. Importar canciones desde JSON
+# ------------------------------------------------------------
 
 @app.route("/importar-json", methods=["POST"])
 def importar_json():
@@ -257,6 +314,10 @@ def importar_json():
     return redirect(url_for("inicio"))
 
 
+# ------------------------------------------------------------
+# 12. Buscar por código usando un árbol binario de búsqueda
+# ------------------------------------------------------------
+
 @app.route("/buscar-arbol", methods=["GET"])
 def buscar_arbol():
     valor = request.args.get("codigo", "").strip()
@@ -274,11 +335,13 @@ def buscar_arbol():
     arbol = ArbolBusqueda()
     canciones = repositorio.obtener_todas()
 
+    # Insertamos las canciones en el árbol.
     for cancion in canciones:
         arbol.insertar(cancion)
 
     cancion_encontrada, comparaciones_arbol = arbol.buscar(codigo)
 
+    # Repetimos la búsqueda con una lista para comparar las comparaciones.
     comparaciones_lista = 0
     encontrada_lista = None
 
@@ -306,6 +369,10 @@ def buscar_arbol():
     )
 
 
+# ------------------------------------------------------------
+# 13. Ordenar las canciones mediante el recorrido inorden del árbol
+# ------------------------------------------------------------
+
 @app.route("/ordenar-arbol")
 def ordenar_arbol():
     arbol = ArbolBusqueda()
@@ -322,6 +389,10 @@ def ordenar_arbol():
         cantidad_historial=historial.cantidad()
     )
 
+
+# ------------------------------------------------------------
+# 14. Explorar canciones por categoría
+# ------------------------------------------------------------
 
 @app.route("/explorar-categoria", methods=["GET"])
 def explorar_categoria():
@@ -344,6 +415,10 @@ def explorar_categoria():
     )
 
 
+# ------------------------------------------------------------
+# 15. Consultar el historial de búsquedas
+# ------------------------------------------------------------
+
 @app.route("/historial-busquedas")
 def ver_historial_busquedas():
     busquedas = historial_busquedas.listar()
@@ -355,6 +430,10 @@ def ver_historial_busquedas():
         cantidad_historial=historial.cantidad()
     )
 
+
+# ------------------------------------------------------------
+# 16. Ver estadísticas por género
+# ------------------------------------------------------------
 
 @app.route("/estadisticas")
 def ver_estadisticas():
@@ -387,6 +466,9 @@ def ver_estadisticas():
     )
 
 
+# ------------------------------------------------------------
+# 17. Ejecutar la aplicación
+# ------------------------------------------------------------
+
 if __name__ == "__main__":
     app.run(debug=True)
-
