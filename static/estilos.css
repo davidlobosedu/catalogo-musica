@@ -116,3 +116,50 @@ a {
 table td form button {
     margin-left: 8px;
 }
+
+/* Resumen superior del listado */
+.resumen-lista {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    background-color: #e9eef5;
+    border-left: 4px solid #3157a4;
+    border-radius: 6px;
+    color: #263b65;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.resumen-lista .separador {
+    color: #9aa7bc;
+    font-weight: bold;
+}
+
+/* Fila de pie de tabla con totales */
+tfoot tr.fila-totales th {
+    background-color: #203154;
+    color: #ffffff;
+    font-size: 0.95rem;
+    padding: 12px;
+    border-top: 2px solid #192742;
+}
+
+tfoot th.total-etiqueta {
+    text-align: right;
+    font-weight: bold;
+}
+
+tfoot th.total-valor {
+    background-color: #3157a4;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+tfoot th.total-formateado {
+    background-color: #2b4b88;
+    font-weight: normal;
+    color: #d8e2f3;
+}
