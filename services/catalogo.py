@@ -54,3 +54,38 @@ class Catalogo:
     def buscar_por_album(self, album):
         """Buscar canciones por álbum."""
         return self.buscar_secuencial("album", album)
+
+    def calcular_segundos_totales(self, canciones=None):
+        """
+        Calcular la suma total de segundos de una lista de canciones.
+        Si no se pasa una lista, calcula el total de todas las canciones del catálogo.
+        """
+        if canciones is None:
+            canciones = self.listar_canciones()
+
+        total = 0
+        for cancion in canciones:
+            total += cancion.duracion
+
+        return total
+
+    @staticmethod
+    def formatear_duracion(segundos):
+        """
+        Convierte una cantidad de segundos a un formato legible en horas, minutos y segundos.
+        """
+        if segundos is None or segundos < 0:
+            return "0 s"
+
+        horas = segundos // 3600
+        minutos = (segundos % 3600) // 60
+        segs = segundos % 60
+
+        partes = []
+        if horas > 0:
+            partes.append(f"{horas} h")
+        if minutos > 0 or horas > 0:
+            partes.append(f"{minutos} min")
+        partes.append(f"{segs} s")
+
+        return " ".join(partes)
