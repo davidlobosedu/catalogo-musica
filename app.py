@@ -46,6 +46,15 @@ historial_busquedas = HistorialBusquedas(capacidad=10)
 # 3. Funciones auxiliares
 # ------------------------------------------------------------
 
+@app.context_processor
+def utilidades_plantilla():
+    """Funciones auxiliares disponibles para las plantillas HTML."""
+    return {
+        "calcular_segundos_totales": catalogo.calcular_segundos_totales,
+        "formatear_duracion": Catalogo.formatear_duracion
+    }
+
+
 def convertir_cancion_a_diccionario(cancion):
     """Convertir una canción en un diccionario para el historial."""
     return {
