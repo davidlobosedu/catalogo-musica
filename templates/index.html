@@ -362,6 +362,16 @@
             <h2>Listado de canciones</h2>
 
             {% if canciones %}
+                {% set total_segundos = calcular_segundos_totales(canciones) %}
+
+                <div class="resumen-lista">
+                    <span><strong>Total de canciones:</strong> {{ canciones | length }}</span>
+                    <span class="separador">|</span>
+                    <span><strong>Segundos totales:</strong> {{ total_segundos }} s</span>
+                    <span class="separador">|</span>
+                    <span><strong>Tiempo total estimado:</strong> {{ formatear_duracion(total_segundos) }}</span>
+                </div>
+
                 <div class="tabla-contenedor">
                     <table>
                         <thead>
@@ -390,7 +400,7 @@
 
                                     <td class="acciones-cancion">
                                         <a
-                                            href="{{ url_for(
+                                             href="{{ url_for(
                                                 'editar_cancion',
                                                 codigo=cancion.codigo
                                             ) }}"
@@ -416,6 +426,14 @@
                                 </tr>
                             {% endfor %}
                         </tbody>
+
+                        <tfoot>
+                            <tr class="fila-totales">
+                                <th colspan="5" class="total-etiqueta">Segundos totales de la lista:</th>
+                                <th class="total-valor">{{ total_segundos }}</th>
+                                <th colspan="2" class="total-formateado">{{ formatear_duracion(total_segundos) }}</th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             {% else %}
